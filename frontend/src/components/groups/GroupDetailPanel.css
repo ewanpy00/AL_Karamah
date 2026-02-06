@@ -1,0 +1,142 @@
+.group-detail-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.panel-header {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.panel-header h2 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+}
+
+.header-badges {
+  display: flex;
+  gap: 10px;
+}
+
+.domain-chip,
+.age-chip {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.domain-chip {
+  background-color: #3498db;
+  color: white;
+}
+
+.age-chip {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+}
+
+.panel-section {
+  margin-bottom: 30px;
+}
+
+.panel-section h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.compatibility-score {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.score-bar {
+  flex: 1;
+  height: 20px;
+  background-color: #ecf0f1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.score-text {
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 50px;
+}
+
+.compatibility-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.issue-item {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-left: 4px solid;
+  border-radius: 4px;
+}
+
+.issue-severity {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.issue-item p {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.students-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.student-card {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.student-age {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.student-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flag-badge {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+

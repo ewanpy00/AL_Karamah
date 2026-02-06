@@ -1,0 +1,103 @@
+.groups-page {
+  padding: 20px;
+  height: 100%;
+}
+
+.groups-header {
+  margin-bottom: 20px;
+}
+
+.groups-header h2 {
+  color: #2c3e50;
+}
+
+.groups-layout {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 120px);
+}
+
+.groups-list {
+  width: 350px;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+  padding-right: 20px;
+}
+
+.group-item {
+  padding: 15px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.group-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.group-item.active {
+  border-color: #3498db;
+  background-color: #f0f8ff;
+}
+
+.group-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.group-item-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.compatibility-indicator {
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.group-item-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.domain-badge {
+  background-color: #3498db;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.age-range,
+.student-count {
+  color: #7f8c8d;
+}
+
+.groups-detail {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.no-selection {
+  padding: 40px;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #7f8c8d;
+}
+
