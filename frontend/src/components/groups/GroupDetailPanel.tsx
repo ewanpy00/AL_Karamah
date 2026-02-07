@@ -1,4 +1,5 @@
 import { GroupDetail, CompatibilityIssue } from '../../types/group'
+import { useNavigate } from 'react-router-dom'
 import './GroupDetailPanel.css'
 
 interface GroupDetailPanelProps {
@@ -7,6 +8,7 @@ interface GroupDetailPanelProps {
 }
 
 export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelProps) {
+  const navigate = useNavigate()
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'HIGH': return '#e74c3c'
@@ -15,12 +17,17 @@ export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelP
     }
   }
 
+  // ensure onRefresh is marked as used for TypeScript build environments
+  void onRefresh
+
   return (
     <div className="group-detail-panel">
       <div className="panel-header">
         <h2>{group.name}</h2>
         <div className="header-badges">
-          <span className="domain-chip">{group.focusDomainName}</span>
+          {group.focusDomainName && (
+            <span className="domain-chip">{group.focusDomainName}</span>
+          )}
           <span className="age-chip">Ages {group.ageRangeMin}-{group.ageRangeMax}</span>
         </div>
       </div>
@@ -64,7 +71,12 @@ export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelP
         <h3>Students ({group.students.length})</h3>
         <div className="students-grid">
           {group.students.map(student => (
-            <div key={student.id} className="student-card">
+            <button
+              key={student.id}
+              type="button"
+              className="student-card student-card-button"
+              onClick={() => navigate(`/students/${student.id}`)}
+            >
               <div className="student-name">{student.name}</div>
               <div className="student-age">Age {student.age}</div>
               {student.compatibilityFlags.length > 0 && (
@@ -74,11 +86,10 @@ export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelP
                   ))}
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
       </div>
     </div>
   )
 }
-

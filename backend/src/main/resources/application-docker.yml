@@ -17,10 +17,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.H2Dialect
+
+  sql:
+    init:
+      mode: always
   
   jackson:
     serialization:
@@ -40,4 +45,3 @@ logging:
   level:
     com.school.aet: INFO
     org.springframework.security: WARN
-

@@ -114,6 +114,17 @@
   border: 1px solid #eee;
 }
 
+.student-card-button {
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.student-card-button:hover {
+  border-color: #3498db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 .student-name {
   font-weight: 600;
   color: #2c3e50;
@@ -139,4 +150,3 @@
   border-radius: 4px;
   font-size: 11px;
 }
-

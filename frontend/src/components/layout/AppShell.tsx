@@ -21,6 +21,11 @@ export default function AppShell({ children }: AppShellProps) {
         <ul className="sidebar-nav">
           <li>
             <Link to="/" className={isActive('/') ? 'active' : ''}>
+              🏠 Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link to="/calendar" className={isActive('/calendar') ? 'active' : ''}>
               📅 Calendar
             </Link>
           </li>
@@ -51,4 +56,3 @@ export default function AppShell({ children }: AppShellProps) {
     </div>
   )
 }
-

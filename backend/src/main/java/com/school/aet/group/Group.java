@@ -31,7 +31,7 @@ public class Group {
     private Integer ageRangeMax;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "focus_domain_id", nullable = false)
+    @JoinColumn(name = "focus_domain_id")
     private AetDomain focusDomain;
 
     @Column(columnDefinition = "TEXT")
@@ -56,4 +56,3 @@ public class Group {
     public AetDomain getFocusDomain() { return focusDomain; }
     public String getDescription() { return description; }
 }
-

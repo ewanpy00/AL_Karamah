@@ -1,0 +1,1 @@
+ALTER TABLE groups ALTER COLUMN focus_domain_id DROP NOT NULL;

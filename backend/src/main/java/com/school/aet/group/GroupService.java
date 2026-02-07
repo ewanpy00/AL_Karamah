@@ -64,8 +64,10 @@ public class GroupService {
         dto.setName(group.getName());
         dto.setAgeRangeMin(group.getAgeRangeMin());
         dto.setAgeRangeMax(group.getAgeRangeMax());
-        dto.setFocusDomainId(group.getFocusDomain().getId());
-        dto.setFocusDomainName(group.getFocusDomain().getName());
+        if (group.getFocusDomain() != null) {
+            dto.setFocusDomainId(group.getFocusDomain().getId());
+            dto.setFocusDomainName(group.getFocusDomain().getName());
+        }
         dto.setDescription(group.getDescription());
         dto.setStudents(students);
         dto.setCompatibilitySummary(compatibility);
@@ -209,10 +211,11 @@ public class GroupService {
         dto.setName(group.getName());
         dto.setAgeRangeMin(group.getAgeRangeMin());
         dto.setAgeRangeMax(group.getAgeRangeMax());
-        dto.setFocusDomainName(group.getFocusDomain().getName());
+        if (group.getFocusDomain() != null) {
+            dto.setFocusDomainName(group.getFocusDomain().getName());
+        }
         dto.setStudentCount(studentCount);
         dto.setCompatibilityScore(compatibility.getScore());
         return dto;
     }
 }
-

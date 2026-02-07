@@ -3,7 +3,7 @@ export interface GroupSummary {
   name: string
   ageRangeMin: number
   ageRangeMax: number
-  focusDomainName: string
+  focusDomainName?: string
   studentCount: number
   compatibilityScore?: number
 }
@@ -31,8 +31,8 @@ export interface GroupDetail {
   name: string
   ageRangeMin: number
   ageRangeMax: number
-  focusDomainId: string
-  focusDomainName: string
+  focusDomainId?: string
+  focusDomainName?: string
   description?: string
   students: StudentInGroup[]
   compatibilitySummary: CompatibilitySummary
@@ -47,3 +47,19 @@ export interface AddStudentsToGroupResponse {
   compatibilityWarnings: CompatibilityIssue[]
 }
 
+export interface CreateGroupRequest {
+  name: string
+  ageRangeMin: number
+  ageRangeMax: number
+  focusDomainId?: string
+  createdById: string
+  description?: string
+}
+
+export interface CreateGroupResponse {
+  id: string
+  name: string
+  ageRangeMin: number
+  ageRangeMax: number
+  description?: string
+}

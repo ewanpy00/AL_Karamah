@@ -1,0 +1,99 @@
+.dashboard-page {
+  padding: 24px;
+  height: 100%;
+}
+
+.dashboard-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.08);
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.hero-class {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.hero-class-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #7f8c8d;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.hero-class-button:hover {
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+.hero-class-input {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.hero-class-input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+}
+
+.dashboard-calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.08);
+}
+
+.calendar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}

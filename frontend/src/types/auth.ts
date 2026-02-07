@@ -9,6 +9,7 @@ export interface User {
   fullName: string
   email: string
   role: Role
+  className?: string
 }
 
 export interface LoginRequest {
@@ -20,4 +21,3 @@ export interface LoginResponse {
   accessToken: string
   user: User
 }
-
