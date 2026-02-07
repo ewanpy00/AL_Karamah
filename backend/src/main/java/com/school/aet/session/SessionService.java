@@ -102,11 +102,15 @@ public class SessionService {
     }
 
     @Transactional
-    public Session createSession(CreateSessionRequest request, UUID ownerId) {
+    public Session createSession(CreateSessionRequest request) {
         Group group = groupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        User owner = userRepository.findById(ownerId)
+        if (request.getOwnerId() == null) {
+            throw new RuntimeException("Owner ID is required");
+        }
+
+        User owner = userRepository.findById(request.getOwnerId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Session session = new Session();
@@ -125,6 +129,35 @@ public class SessionService {
         }
 
         return sessionRepository.save(session);
+    }
+
+    @Transactional
+    public void updateSession(UUID sessionId, UpdateSessionRequest request) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        if (request.getTitle() != null && !request.getTitle().trim().isEmpty()) {
+            session.setTitle(request.getTitle().trim());
+        }
+        if (request.getStartTime() != null) {
+            session.setStartTime(request.getStartTime());
+        }
+        if (request.getEndTime() != null) {
+            session.setEndTime(request.getEndTime());
+        }
+        if (request.getLocation() != null && !request.getLocation().trim().isEmpty()) {
+            session.setLocation(request.getLocation().trim());
+        }
+        if (request.getNotes() != null) {
+            session.setNotes(request.getNotes());
+        }
+
+        if (session.getStartTime() != null && session.getEndTime() != null &&
+                session.getEndTime().isBefore(session.getStartTime())) {
+            throw new RuntimeException("End time must be after start time");
+        }
+
+        sessionRepository.save(session);
     }
 
     @Transactional
@@ -236,11 +269,12 @@ public class SessionService {
         dto.setGroupName(session.getGroup().getName());
         dto.setStartTime(session.getStartTime().toString());
         dto.setEndTime(session.getEndTime().toString());
-        dto.setFocusDomainCode(session.getGroup().getFocusDomain().getCode());
-        dto.setFocusDomainName(session.getGroup().getFocusDomain().getName());
+        if (session.getGroup().getFocusDomain() != null) {
+            dto.setFocusDomainCode(session.getGroup().getFocusDomain().getCode());
+            dto.setFocusDomainName(session.getGroup().getFocusDomain().getName());
+        }
         dto.setStatus(session.getStatus().name());
         dto.setAetTags(aetTags);
         return dto;
     }
 }
-

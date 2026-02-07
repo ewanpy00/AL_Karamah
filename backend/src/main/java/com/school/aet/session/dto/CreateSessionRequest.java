@@ -17,6 +17,9 @@ public class CreateSessionRequest {
     private UUID groupId;
 
     @NotNull
+    private UUID ownerId;
+
+    @NotNull
     private Instant startTime;
 
     @NotNull
@@ -31,10 +34,10 @@ public class CreateSessionRequest {
     // Explicit getters for compatibility
     public String getTitle() { return title; }
     public UUID getGroupId() { return groupId; }
+    public UUID getOwnerId() { return ownerId; }
     public Instant getStartTime() { return startTime; }
     public Instant getEndTime() { return endTime; }
     public String getLocation() { return location; }
     public String getNotes() { return notes; }
     public List<UUID> getAetStatementIds() { return aetStatementIds; }
 }
-

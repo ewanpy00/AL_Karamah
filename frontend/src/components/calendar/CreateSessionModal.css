@@ -1,0 +1,95 @@
+.session-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.session-modal {
+  width: 520px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.session-modal-header,
+.session-modal-footer {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.session-modal-footer {
+  border-top: 1px solid #eee;
+  border-bottom: none;
+}
+
+.session-modal-body {
+  padding: 16px 20px;
+}
+
+.session-modal-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.session-modal-row label {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.session-modal-row input,
+.session-modal-row select {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.session-modal-time {
+  font-size: 13px;
+  color: #2c3e50;
+}
+
+.session-modal-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.session-modal-hint {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.session-modal-error {
+  color: #e74c3c;
+  font-size: 13px;
+}
+
+.session-primary-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.session-secondary-btn {
+  background: white;
+  color: #2c3e50;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}

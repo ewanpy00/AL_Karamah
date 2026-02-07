@@ -34,10 +34,15 @@ public class SessionController {
     }
 
     @PostMapping
-    public ResponseEntity<Session> createSession(@RequestBody CreateSessionRequest request) {
-        // In real implementation, get ownerId from security context
-        UUID ownerId = UUID.randomUUID(); // Placeholder
-        return ResponseEntity.ok(sessionService.createSession(request, ownerId));
+    public ResponseEntity<Void> createSession(@RequestBody CreateSessionRequest request) {
+        sessionService.createSession(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateSession(@PathVariable UUID id, @RequestBody UpdateSessionRequest request) {
+        sessionService.updateSession(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{sessionId}/resources/suggestions")
@@ -47,4 +52,3 @@ public class SessionController {
         return ResponseEntity.ok(sessionService.suggestResourcesForSession(sessionId, maxResults));
     }
 }
-

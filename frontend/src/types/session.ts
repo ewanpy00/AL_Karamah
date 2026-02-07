@@ -46,11 +46,20 @@ export interface SessionDetail {
 export interface CreateSessionRequest {
   title: string
   groupId: string
+  ownerId: string
   startTime: string
   endTime: string
   location: string
   notes?: string
   aetStatementIds?: string[]
+}
+
+export interface UpdateSessionRequest {
+  title?: string
+  startTime?: string
+  endTime?: string
+  location?: string
+  notes?: string
 }
 
 export interface ResourceSuggestion {
@@ -66,4 +75,3 @@ export interface ResourceSuggestionResponse {
   sessionId: string
   suggestions: ResourceSuggestion[]
 }
-

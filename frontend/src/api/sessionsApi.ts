@@ -1,5 +1,5 @@
 import apiClient from './client'
-import { CalendarSession, SessionDetail, CreateSessionRequest, ResourceSuggestionResponse } from '../types/session'
+import { CalendarSession, SessionDetail, CreateSessionRequest, ResourceSuggestionResponse, UpdateSessionRequest } from '../types/session'
 
 export const sessionsApi = {
   getCalendarSessions: async (from: string, to: string, groupId?: string, ownerId?: string): Promise<CalendarSession[]> => {
@@ -23,6 +23,11 @@ export const sessionsApi = {
     return response.data
   },
 
+  updateSession: async (id: string, request: UpdateSessionRequest): Promise<any> => {
+    const response = await apiClient.put(`/sessions/${id}`, request)
+    return response.data
+  },
+
   suggestResources: async (sessionId: string, maxResults: number = 10): Promise<ResourceSuggestionResponse> => {
     const response = await apiClient.post<ResourceSuggestionResponse>(
       `/sessions/${sessionId}/resources/suggestions?maxResults=${maxResults}`
@@ -30,4 +35,3 @@ export const sessionsApi = {
     return response.data
   },
 }
-

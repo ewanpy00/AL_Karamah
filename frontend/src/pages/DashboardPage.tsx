@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import moment from 'moment'
 import 'moment/locale/en-gb'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import { useAuthStore } from '../store/authStore'
 import { sessionsApi } from '../api/sessionsApi'
 import { CalendarSession } from '../types/session'
 import SessionDetailsDrawer from '../components/calendar/SessionDetailsDrawer'
+import CreateSessionModal from '../components/calendar/CreateSessionModal'
 import './DashboardPage.css'
 
 moment.locale('en-gb')
 const localizer = momentLocalizer(moment)
+const DnDCalendar = withDragAndDrop(Calendar as any)
+const DnDCalendarAny = DnDCalendar as any
 
 function getInitials(name?: string) {
   if (!name) return '?'
@@ -25,27 +30,29 @@ export default function DashboardPage() {
   const [sessions, setSessions] = useState<CalendarSession[]>([])
   const [selectedSession, setSelectedSession] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [createRange, setCreateRange] = useState<{ start: Date; end: Date } | null>(null)
   const [isEditingClass, setIsEditingClass] = useState(false)
   const [classValue, setClassValue] = useState(user?.className || '')
 
   const today = useMemo(() => new Date(), [])
 
-  useEffect(() => {
-    const loadToday = async () => {
-      setLoading(true)
-      try {
-        const start = moment(today).startOf('day').toISOString()
-        const end = moment(today).endOf('day').toISOString()
-        const data = await sessionsApi.getCalendarSessions(start, end)
-        setSessions(data)
-      } catch (error) {
-        console.error('Failed to load today sessions', error)
-      } finally {
-        setLoading(false)
-      }
+  const loadSessions = async () => {
+    setLoading(true)
+    try {
+      const start = moment(today).startOf('day').toISOString()
+      const end = moment(today).endOf('day').toISOString()
+      const data = await sessionsApi.getCalendarSessions(start, end)
+      setSessions(data)
+    } catch (error) {
+      console.error('Failed to load today sessions', error)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    loadToday()
+  useEffect(() => {
+    loadSessions()
   }, [today])
 
   useEffect(() => {
@@ -120,7 +127,7 @@ export default function DashboardPage() {
         {loading ? (
           <div className="loading">Loading...</div>
         ) : (
-          <Calendar
+          <DnDCalendarAny
             localizer={localizer}
             events={events}
             startAccessor="start"
@@ -129,8 +136,28 @@ export default function DashboardPage() {
             views={['day']}
             date={today}
             toolbar={false}
-            onSelectEvent={(event) => setSelectedSession(event.id as string)}
+            onSelectEvent={(event: any) => setSelectedSession(event.id)}
             eventPropGetter={eventStyleGetter}
+            selectable
+            resizable
+            onSelectSlot={(slotInfo: any) => {
+              setCreateRange({ start: slotInfo.start as Date, end: slotInfo.end as Date })
+              setIsCreateOpen(true)
+            }}
+            onEventDrop={async ({ event, start, end }: any) => {
+              await sessionsApi.updateSession(event.id, {
+                startTime: (start as Date).toISOString(),
+                endTime: (end as Date).toISOString(),
+              })
+              await loadSessions()
+            }}
+            onEventResize={async ({ event, start, end }: any) => {
+              await sessionsApi.updateSession(event.id, {
+                startTime: (start as Date).toISOString(),
+                endTime: (end as Date).toISOString(),
+              })
+              await loadSessions()
+            }}
             style={{ height: '520px' }}
           />
         )}
@@ -140,6 +167,27 @@ export default function DashboardPage() {
         <SessionDetailsDrawer
           sessionId={selectedSession}
           onClose={() => setSelectedSession(null)}
+        />
+      )}
+      {isCreateOpen && createRange && (
+        <CreateSessionModal
+          open={isCreateOpen}
+          start={createRange.start}
+          end={createRange.end}
+          onClose={() => setIsCreateOpen(false)}
+          onCreate={async ({ title, groupId, location }) => {
+            if (!user?.id) return
+            await sessionsApi.createSession({
+              title,
+              groupId,
+              ownerId: user.id,
+              startTime: createRange.start.toISOString(),
+              endTime: createRange.end.toISOString(),
+              location,
+            })
+            setIsCreateOpen(false)
+            await loadSessions()
+          }}
         />
       )}
     </div>
