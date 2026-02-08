@@ -105,7 +105,7 @@ export default function DashboardPage() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') setIsEditingClass(false)
                 }}
-                placeholder="Введите номер класса"
+                placeholder="Class number"
                 autoFocus
               />
             ) : (
@@ -113,7 +113,7 @@ export default function DashboardPage() {
                 type="button"
                 className="hero-class-button"
                 onClick={() => setIsEditingClass(true)}
-                aria-label="Редактировать класс"
+                aria-label="Change class"
               >
                 {classValue || user?.className || 'Class not set'}
               </button>

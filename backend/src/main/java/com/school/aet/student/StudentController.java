@@ -2,6 +2,8 @@ package com.school.aet.student;
 
 import com.school.aet.student.dto.StudentDetailDto;
 import com.school.aet.student.dto.StudentSummaryDto;
+import com.school.aet.student.dto.StudentProgressDto;
+import com.school.aet.student.dto.UpdateStudentProgressRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,17 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentById(id));
     }
 
+    @GetMapping("/{id}/progress")
+    public ResponseEntity<List<StudentProgressDto>> getStudentProgress(@PathVariable UUID id) {
+        return ResponseEntity.ok(studentService.getStudentProgress(id));
+    }
+
+    @PutMapping("/{id}/progress")
+    public ResponseEntity<StudentProgressDto> updateStudentProgress(@PathVariable UUID id, @RequestBody UpdateStudentProgressRequest request) {
+        StudentProgressStatus status = StudentProgressStatus.valueOf(request.getStatus());
+        return ResponseEntity.ok(studentService.updateStudentProgress(id, request.getItemKey(), status));
+    }
+
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
         return ResponseEntity.ok(studentService.createStudent(student));
@@ -41,4 +54,3 @@ public class StudentController {
         return ResponseEntity.ok(studentService.updateStudent(id, student));
     }
 }
-

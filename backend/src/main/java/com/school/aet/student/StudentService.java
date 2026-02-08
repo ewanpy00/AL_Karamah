@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentAetProfileRepository studentAetProfileRepository;
+    private final StudentProgressRepository studentProgressRepository;
     
-    public StudentService(StudentRepository studentRepository, StudentAetProfileRepository studentAetProfileRepository) {
+    public StudentService(StudentRepository studentRepository, StudentAetProfileRepository studentAetProfileRepository, StudentProgressRepository studentProgressRepository) {
         this.studentRepository = studentRepository;
         this.studentAetProfileRepository = studentAetProfileRepository;
+        this.studentProgressRepository = studentProgressRepository;
     }
 
     public List<StudentSummaryDto> getStudents(String search, Integer ageMin, Integer ageMax) {
@@ -67,6 +69,46 @@ public class StudentService {
         return dto;
     }
 
+    public List<com.school.aet.student.dto.StudentProgressDto> getStudentProgress(UUID studentId) {
+        studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        return studentProgressRepository.findByStudentId(studentId).stream()
+                .map(p -> {
+                    com.school.aet.student.dto.StudentProgressDto dto = new com.school.aet.student.dto.StudentProgressDto();
+                    dto.setId(p.getId());
+                    dto.setItemKey(p.getItemKey());
+                    dto.setStatus(p.getStatus().name());
+                    dto.setUpdatedAt(p.getUpdatedAt().toString());
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public com.school.aet.student.dto.StudentProgressDto updateStudentProgress(UUID studentId, String itemKey, StudentProgressStatus status) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        StudentProgress progress = studentProgressRepository.findByStudentIdAndItemKey(studentId, itemKey)
+                .orElseGet(() -> {
+                    StudentProgress p = new StudentProgress();
+                    p.setStudent(student);
+                    p.setItemKey(itemKey);
+                    return p;
+                });
+
+        progress.setStatus(status);
+        progress.setUpdatedAt(java.time.Instant.now());
+        StudentProgress saved = studentProgressRepository.save(progress);
+
+        com.school.aet.student.dto.StudentProgressDto dto = new com.school.aet.student.dto.StudentProgressDto();
+        dto.setId(saved.getId());
+        dto.setItemKey(saved.getItemKey());
+        dto.setStatus(saved.getStatus().name());
+        dto.setUpdatedAt(saved.getUpdatedAt().toString());
+        return dto;
+    }
+
     @Transactional
     public Student createStudent(Student student) {
         return studentRepository.save(student);
@@ -88,4 +130,3 @@ public class StudentService {
         return studentRepository.save(existing);
     }
 }
-

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { studentsApi } from '../api/studentsApi'
 import { StudentDetail } from '../types/student'
+import { ProgressStatus, StudentProgressEntry } from '../types/progress'
+import { progressTree } from '../data/progressTree'
 import './StudentDetailPage.css'
 
 export default function StudentDetailPage() {
@@ -9,6 +11,9 @@ export default function StudentDetailPage() {
   const [student, setStudent] = useState<StudentDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [progressMap, setProgressMap] = useState<Record<string, ProgressStatus>>({})
+  const [savingKey, setSavingKey] = useState<string | null>(null)
+  const [selectedDomainId, setSelectedDomainId] = useState(progressTree[0]?.id || '')
 
   useEffect(() => {
     const load = async () => {
@@ -16,6 +21,12 @@ export default function StudentDetailPage() {
       try {
         const data = await studentsApi.getStudentById(id)
         setStudent(data)
+        const progress = await studentsApi.getStudentProgress(id)
+        const map: Record<string, ProgressStatus> = {}
+        progress.forEach((entry: StudentProgressEntry) => {
+          map[entry.itemKey] = entry.status
+        })
+        setProgressMap(map)
       } catch (e: any) {
         console.error('Failed to load student', e)
         setError('Failed to load student')
@@ -91,9 +102,70 @@ export default function StudentDetailPage() {
             </div>
           )}
         </section>
+
+        <section className="student-section">
+          <h3>Progress</h3>
+          <div className="progress-domain-picker">
+            {progressTree.map(domain => (
+              <button
+                key={domain.id}
+                type="button"
+                className={`progress-domain-btn ${selectedDomainId === domain.id ? 'active' : ''}`}
+                onClick={() => setSelectedDomainId(domain.id)}
+              >
+                {domain.id}. {domain.title}
+              </button>
+            ))}
+          </div>
+
+          {progressTree
+            .filter(domain => domain.id === selectedDomainId)
+            .map(domain => (
+              <div key={domain.id} className="progress-domain">
+                {domain.sections.map(section => (
+                  <div key={section.id} className="progress-section">
+                    <div className="progress-section-title">{section.id} {section.title}</div>
+                    <div className="progress-items">
+                      {section.items.map(item => {
+                        const status = progressMap[item.id] || 'NOT_STARTED'
+                        return (
+                          <div key={item.id} className={`progress-item status-${status.toLowerCase()}`}>
+                            <div className="progress-item-text">
+                              <span className="progress-item-id">{item.id}</span>
+                              <span className="progress-item-title">{item.title}</span>
+                            </div>
+                            <div className="progress-item-actions">
+                              {(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'] as ProgressStatus[]).map(s => (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  className={`progress-status-btn ${status === s ? 'active' : ''}`}
+                                  disabled={savingKey === item.id}
+                                  onClick={async () => {
+                                    if (!id) return
+                                    setSavingKey(item.id)
+                                    try {
+                                      await studentsApi.updateStudentProgress(id, item.id, s)
+                                      setProgressMap((prev) => ({ ...prev, [item.id]: s }))
+                                    } finally {
+                                      setSavingKey(null)
+                                    }
+                                  }}
+                                >
+                                  {s === 'NOT_STARTED' ? 'Not done' : s === 'IN_PROGRESS' ? 'In progress' : 'Done'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+        </section>
       </div>
     </div>
   )
 }
-
-
