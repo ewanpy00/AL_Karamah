@@ -1,5 +1,7 @@
 package com.school.aet.group;
 
+import com.school.aet.aet.AetDomain;
+import com.school.aet.aet.AetDomainRepository;
 import com.school.aet.group.dto.*;
 import com.school.aet.student.Student;
 import com.school.aet.student.StudentAetProfile;
@@ -22,15 +24,18 @@ public class GroupService {
     private final GroupStudentRepository groupStudentRepository;
     private final StudentRepository studentRepository;
     private final StudentAetProfileRepository studentAetProfileRepository;
+    private final AetDomainRepository aetDomainRepository;
     
     public GroupService(GroupRepository groupRepository, 
                         GroupStudentRepository groupStudentRepository,
                         StudentRepository studentRepository,
-                        StudentAetProfileRepository studentAetProfileRepository) {
+                        StudentAetProfileRepository studentAetProfileRepository,
+                        AetDomainRepository aetDomainRepository) {
         this.groupRepository = groupRepository;
         this.groupStudentRepository = groupStudentRepository;
         this.studentRepository = studentRepository;
         this.studentAetProfileRepository = studentAetProfileRepository;
+        this.aetDomainRepository = aetDomainRepository;
     }
 
     public List<GroupSummaryDto> getAllGroups(Boolean active, UUID focusDomainId, Integer ageMin, Integer ageMax) {
@@ -77,6 +82,46 @@ public class GroupService {
     @Transactional
     public Group createGroup(Group group) {
         return groupRepository.save(group);
+    }
+
+    @Transactional
+    public Group updateGroup(UUID groupId, UpdateGroupRequest request) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            group.setName(request.getName().trim());
+        }
+        if (request.getAgeRangeMin() != null) {
+            group.setAgeRangeMin(request.getAgeRangeMin());
+        }
+        if (request.getAgeRangeMax() != null) {
+            group.setAgeRangeMax(request.getAgeRangeMax());
+        }
+        if (request.getDescription() != null) {
+            group.setDescription(request.getDescription());
+        }
+        if (request.getActive() != null) {
+            group.setActive(request.getActive());
+        }
+
+        if (request.getFocusDomainId() != null) {
+            AetDomain domain = aetDomainRepository.findById(request.getFocusDomainId())
+                    .orElseThrow(() -> new RuntimeException("Focus domain not found"));
+            group.setFocusDomain(domain);
+        } else {
+            group.setFocusDomain(null);
+        }
+
+        return groupRepository.save(group);
+    }
+
+    @Transactional
+    public void deleteGroup(UUID groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        group.setActive(false);
+        groupRepository.save(group);
     }
 
     @Transactional

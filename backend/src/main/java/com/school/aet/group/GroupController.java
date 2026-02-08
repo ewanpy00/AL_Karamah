@@ -36,6 +36,17 @@ public class GroupController {
         return ResponseEntity.ok(groupService.createGroup(group));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Group> updateGroup(@PathVariable UUID id, @RequestBody UpdateGroupRequest request) {
+        return ResponseEntity.ok(groupService.updateGroup(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGroup(@PathVariable UUID id) {
+        groupService.deleteGroup(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{groupId}/students")
     public ResponseEntity<AddStudentsToGroupResponse> addStudentsToGroup(
             @PathVariable UUID groupId,
@@ -56,4 +67,3 @@ public class GroupController {
         return ResponseEntity.ok(groupService.calculateCompatibility(id));
     }
 }
-

@@ -5,9 +5,11 @@ import './GroupDetailPanel.css'
 interface GroupDetailPanelProps {
   group: GroupDetail
   onRefresh: () => void
+  onEdit: (group: GroupDetail) => void
+  onDelete: (group: GroupDetail) => void
 }
 
-export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelProps) {
+export default function GroupDetailPanel({ group, onRefresh, onEdit, onDelete }: GroupDetailPanelProps) {
   const navigate = useNavigate()
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -23,7 +25,13 @@ export default function GroupDetailPanel({ group, onRefresh }: GroupDetailPanelP
   return (
     <div className="group-detail-panel">
       <div className="panel-header">
-        <h2>{group.name}</h2>
+        <div>
+          <h2>{group.name}</h2>
+          <div className="header-actions">
+            <button className="header-btn" onClick={() => onEdit(group)}>Edit</button>
+            <button className="header-btn danger" onClick={() => onDelete(group)}>Delete</button>
+          </div>
+        </div>
         <div className="header-badges">
           {group.focusDomainName && (
             <span className="domain-chip">{group.focusDomainName}</span>

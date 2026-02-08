@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { groupsApi } from '../api/groupsApi'
 import { studentsApi } from '../api/studentsApi'
 import { aetApi } from '../api/aetApi'
@@ -10,12 +11,15 @@ import GroupDetailPanel from '../components/groups/GroupDetailPanel'
 import './GroupsPage.css'
 
 export default function GroupsPage() {
+  const [searchParams] = useSearchParams()
   const { user } = useAuthStore()
   const [groups, setGroups] = useState<GroupSummary[]>([])
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
   const [groupDetail, setGroupDetail] = useState<GroupDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingGroup, setEditingGroup] = useState<GroupDetail | null>(null)
   const [domains, setDomains] = useState<AetDomain[]>([])
   const [students, setStudents] = useState<StudentSummary[]>([])
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([])
@@ -32,6 +36,13 @@ export default function GroupsPage() {
   useEffect(() => {
     loadGroups()
   }, [])
+
+  useEffect(() => {
+    const selected = searchParams.get('selected')
+    if (selected) {
+      setSelectedGroup(selected)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (isCreateOpen) {
@@ -101,14 +112,12 @@ export default function GroupsPage() {
     })
     setSelectedStudentIds([])
     setCreateError(null)
+    setIsEditMode(false)
+    setEditingGroup(null)
   }
 
-  const handleCreateGroup = async () => {
+  const handleSaveGroup = async () => {
     setCreateError(null)
-    if (!user?.id) {
-      setCreateError('User not available')
-      return
-    }
 
     const ageMin = Number(createForm.ageRangeMin)
     const ageMax = Number(createForm.ageRangeMax)
@@ -128,26 +137,45 @@ export default function GroupsPage() {
 
     try {
       setCreating(true)
-      const group = await groupsApi.createGroup({
-        name: createForm.name.trim(),
-        ageRangeMin: ageMin,
-        ageRangeMax: ageMax,
-        focusDomainId: createForm.focusDomainId || undefined,
-        createdById: user.id,
-        description: createForm.description.trim() || undefined,
-      })
+      let groupId = editingGroup?.id
+      if (isEditMode && editingGroup) {
+        await groupsApi.updateGroup(editingGroup.id, {
+          name: createForm.name.trim(),
+          ageRangeMin: ageMin,
+          ageRangeMax: ageMax,
+          focusDomainId: createForm.focusDomainId || undefined,
+          description: createForm.description.trim() || undefined,
+        })
+        groupId = editingGroup.id
+      } else {
+        if (!user?.id) {
+          setCreateError('User not available')
+          return
+        }
+        const created = await groupsApi.createGroup({
+          name: createForm.name.trim(),
+          ageRangeMin: ageMin,
+          ageRangeMax: ageMax,
+          focusDomainId: createForm.focusDomainId || undefined,
+          createdById: user.id,
+          description: createForm.description.trim() || undefined,
+        })
+        groupId = created.id
+      }
 
       if (selectedStudentIds.length > 0) {
-        await groupsApi.addStudentsToGroup(group.id, { studentIds: selectedStudentIds })
+        await groupsApi.addStudentsToGroup(groupId as string, { studentIds: selectedStudentIds })
       }
 
       await loadGroups()
-      setSelectedGroup(group.id)
+      if (groupId) {
+        setSelectedGroup(groupId)
+      }
       setIsCreateOpen(false)
       resetCreateForm()
     } catch (error) {
-      console.error('Failed to create group', error)
-      setCreateError('Failed to create group')
+      console.error(isEditMode ? 'Failed to update group' : 'Failed to create group', error)
+      setCreateError(isEditMode ? 'Failed to update group' : 'Failed to create group')
     } finally {
       setCreating(false)
     }
@@ -157,7 +185,7 @@ export default function GroupsPage() {
     <div className="groups-page">
       <div className="groups-header">
         <h2>Groups</h2>
-        <button className="create-group-btn" onClick={() => setIsCreateOpen(true)}>
+        <button className="create-group-btn" onClick={() => { setIsEditMode(false); setIsCreateOpen(true) }}>
           + Create Group
         </button>
       </div>
@@ -191,7 +219,30 @@ export default function GroupsPage() {
         </div>
         <div className="groups-detail">
           {groupDetail ? (
-            <GroupDetailPanel group={groupDetail} onRefresh={loadGroups} />
+            <GroupDetailPanel
+              group={groupDetail}
+              onRefresh={loadGroups}
+              onEdit={(group) => {
+                setIsEditMode(true)
+                setEditingGroup(group)
+                setCreateForm({
+                  name: group.name || '',
+                  ageRangeMin: String(group.ageRangeMin || ''),
+                  ageRangeMax: String(group.ageRangeMax || ''),
+                  focusDomainId: group.focusDomainId || '',
+                  description: group.description || '',
+                })
+                setSelectedStudentIds([])
+                setIsCreateOpen(true)
+              }}
+              onDelete={async (group) => {
+                if (!window.confirm('Delete this group?')) return
+                await groupsApi.deleteGroup(group.id)
+                await loadGroups()
+                setSelectedGroup(null)
+                setGroupDetail(null)
+              }}
+            />
           ) : (
             <div className="no-selection">Select a group to view details</div>
           )}
@@ -202,7 +253,7 @@ export default function GroupsPage() {
         <div className="modal-overlay" onClick={() => { setIsCreateOpen(false); resetCreateForm() }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Create Group</h3>
+              <h3>{isEditMode ? 'Edit Group' : 'Create Group'}</h3>
               <button className="modal-close" onClick={() => { setIsCreateOpen(false); resetCreateForm() }}>✕</button>
             </div>
             <div className="modal-body">
@@ -256,7 +307,9 @@ export default function GroupsPage() {
               <div className="form-row">
                 <label>Add students</label>
                 <div className="student-list">
-                  {students.map((student) => {
+                  {students
+                    .filter((student) => !editingGroup?.students?.some((s) => s.id === student.id))
+                    .map((student) => {
                     const name = `${student.firstName} ${student.lastName}`
                     return (
                       <label key={student.id} className="student-item">
@@ -278,8 +331,8 @@ export default function GroupsPage() {
               <button className="secondary-btn" onClick={() => { setIsCreateOpen(false); resetCreateForm() }}>
                 Cancel
               </button>
-              <button className="primary-btn" onClick={handleCreateGroup} disabled={creating}>
-                {creating ? 'Creating...' : 'Create'}
+              <button className="primary-btn" onClick={handleSaveGroup} disabled={creating}>
+                {creating ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save' : 'Create')}
               </button>
             </div>
           </div>

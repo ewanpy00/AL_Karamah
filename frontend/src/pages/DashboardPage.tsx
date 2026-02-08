@@ -67,6 +67,10 @@ export default function DashboardPage() {
     resource: session,
   }))
 
+  const todayGroups = Array.from(
+    new Map(sessions.map((s) => [s.groupId, s.groupName])).entries()
+  ).map(([id, name]) => ({ id, name }))
+
   const eventStyleGetter = (event: any) => {
     const session = event.resource as CalendarSession
     const colors: Record<string, string> = {
@@ -122,45 +126,69 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="dashboard-calendar">
-        <div className="calendar-title">Today</div>
-        {loading ? (
-          <div className="loading">Loading...</div>
-        ) : (
-          <DnDCalendarAny
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            view="day"
-            views={['day']}
-            date={today}
-            toolbar={false}
-            onSelectEvent={(event: any) => setSelectedSession(event.id)}
-            eventPropGetter={eventStyleGetter}
-            selectable
-            resizable
-            onSelectSlot={(slotInfo: any) => {
-              setCreateRange({ start: slotInfo.start as Date, end: slotInfo.end as Date })
-              setIsCreateOpen(true)
-            }}
-            onEventDrop={async ({ event, start, end }: any) => {
-              await sessionsApi.updateSession(event.id, {
-                startTime: (start as Date).toISOString(),
-                endTime: (end as Date).toISOString(),
-              })
-              await loadSessions()
-            }}
-            onEventResize={async ({ event, start, end }: any) => {
-              await sessionsApi.updateSession(event.id, {
-                startTime: (start as Date).toISOString(),
-                endTime: (end as Date).toISOString(),
-              })
-              await loadSessions()
-            }}
-            style={{ height: '520px' }}
-          />
-        )}
+      <div className="dashboard-row">
+        <div className="dashboard-calendar">
+          <div className="calendar-title">Today</div>
+          {loading ? (
+            <div className="loading">Loading...</div>
+          ) : (
+            <DnDCalendarAny
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              view="day"
+              views={['day']}
+              date={today}
+              toolbar={false}
+              onSelectEvent={(event: any) => setSelectedSession(event.id)}
+              eventPropGetter={eventStyleGetter}
+              selectable
+              resizable
+              onSelectSlot={(slotInfo: any) => {
+                setCreateRange({ start: slotInfo.start as Date, end: slotInfo.end as Date })
+                setIsCreateOpen(true)
+              }}
+              onEventDrop={async ({ event, start, end }: any) => {
+                await sessionsApi.updateSession(event.id, {
+                  startTime: (start as Date).toISOString(),
+                  endTime: (end as Date).toISOString(),
+                })
+                await loadSessions()
+              }}
+              onEventResize={async ({ event, start, end }: any) => {
+                await sessionsApi.updateSession(event.id, {
+                  startTime: (start as Date).toISOString(),
+                  endTime: (end as Date).toISOString(),
+                })
+                await loadSessions()
+              }}
+              style={{ height: '360px' }}
+            />
+          )}
+        </div>
+
+        <div className="dashboard-today-groups">
+          <div className="calendar-title">Today’s Groups</div>
+          {loading ? (
+            <div className="loading">Loading...</div>
+          ) : todayGroups.length === 0 ? (
+            <div className="empty-state">No groups scheduled today.</div>
+          ) : (
+            <div className="today-groups-list">
+              {todayGroups.map((group) => (
+                <button
+                  key={group.id}
+                  type="button"
+                  className="today-group-card"
+                  onClick={() => window.location.assign(`/groups?selected=${group.id}`)}
+                >
+                  {group.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {selectedSession && (

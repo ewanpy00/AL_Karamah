@@ -12,6 +12,7 @@ import java.util.UUID;
 @Repository
 public interface SessionRepository extends JpaRepository<Session, UUID> {
     @Query("SELECT s FROM Session s WHERE s.startTime >= :from AND s.startTime <= :to " +
+           "AND s.group.active = true " +
            "AND (:groupId IS NULL OR s.group.id = :groupId) " +
            "AND (:ownerId IS NULL OR s.owner.id = :ownerId) " +
            "ORDER BY s.startTime ASC")
@@ -22,4 +23,3 @@ public interface SessionRepository extends JpaRepository<Session, UUID> {
     
     List<Session> findByGroupId(UUID groupId);
 }
-

@@ -63,3 +63,12 @@ export interface CreateGroupResponse {
   ageRangeMax: number
   description?: string
 }
+
+export interface UpdateGroupRequest {
+  name?: string
+  ageRangeMin?: number
+  ageRangeMax?: number
+  focusDomainId?: string
+  description?: string
+  active?: boolean
+}

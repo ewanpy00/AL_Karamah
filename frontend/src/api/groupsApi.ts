@@ -1,5 +1,5 @@
 import apiClient from './client'
-import { GroupSummary, GroupDetail, AddStudentsToGroupRequest, AddStudentsToGroupResponse, CompatibilitySummary, CreateGroupRequest, CreateGroupResponse } from '../types/group'
+import { GroupSummary, GroupDetail, AddStudentsToGroupRequest, AddStudentsToGroupResponse, CompatibilitySummary, CreateGroupRequest, CreateGroupResponse, UpdateGroupRequest } from '../types/group'
 
 export const groupsApi = {
   getGroups: async (active?: boolean, focusDomainId?: string, ageMin?: number, ageMax?: number): Promise<GroupSummary[]> => {
@@ -30,6 +30,14 @@ export const groupsApi = {
     }
     const response = await apiClient.post<CreateGroupResponse>('/groups', payload)
     return response.data
+  },
+
+  updateGroup: async (id: string, request: UpdateGroupRequest): Promise<void> => {
+    await apiClient.put(`/groups/${id}`, request)
+  },
+
+  deleteGroup: async (id: string): Promise<void> => {
+    await apiClient.delete(`/groups/${id}`)
   },
 
   addStudentsToGroup: async (groupId: string, request: AddStudentsToGroupRequest): Promise<AddStudentsToGroupResponse> => {
