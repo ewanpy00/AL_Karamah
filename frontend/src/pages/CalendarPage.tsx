@@ -106,6 +106,12 @@ export default function CalendarPage() {
           onNavigate={setCurrentDate}
           onSelectEvent={(event: any) => setSelectedSession(event.id)}
           eventPropGetter={eventStyleGetter}
+          onDoubleClickEvent={async (event: any) => {
+            const ok = window.confirm('Delete this event?')
+            if (!ok) return
+            await sessionsApi.deleteSession(event.id)
+            await loadSessions()
+          }}
           selectable
           resizable
           onSelectSlot={(slotInfo: any) => {
@@ -133,6 +139,7 @@ export default function CalendarPage() {
         <SessionDetailsDrawer
           sessionId={selectedSession}
           onClose={() => setSelectedSession(null)}
+          onDeleted={loadSessions}
         />
       )}
       {isCreateOpen && createRange && (

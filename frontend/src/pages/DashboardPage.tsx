@@ -141,8 +141,14 @@ export default function DashboardPage() {
               views={['day']}
               date={today}
               toolbar={false}
-              onSelectEvent={(event: any) => setSelectedSession(event.id)}
-              eventPropGetter={eventStyleGetter}
+            onSelectEvent={(event: any) => setSelectedSession(event.id)}
+            eventPropGetter={eventStyleGetter}
+            onDoubleClickEvent={async (event: any) => {
+              const ok = window.confirm('Delete this event?')
+              if (!ok) return
+              await sessionsApi.deleteSession(event.id)
+              await loadSessions()
+            }}
               selectable
               resizable
               onSelectSlot={(slotInfo: any) => {
@@ -195,6 +201,7 @@ export default function DashboardPage() {
         <SessionDetailsDrawer
           sessionId={selectedSession}
           onClose={() => setSelectedSession(null)}
+          onDeleted={loadSessions}
         />
       )}
       {isCreateOpen && createRange && (

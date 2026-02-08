@@ -28,6 +28,10 @@ export const sessionsApi = {
     return response.data
   },
 
+  deleteSession: async (id: string): Promise<void> => {
+    await apiClient.delete(`/sessions/${id}`)
+  },
+
   suggestResources: async (sessionId: string, maxResults: number = 10): Promise<ResourceSuggestionResponse> => {
     const response = await apiClient.post<ResourceSuggestionResponse>(
       `/sessions/${sessionId}/resources/suggestions?maxResults=${maxResults}`

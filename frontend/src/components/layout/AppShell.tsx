@@ -60,6 +60,11 @@ export default function AppShell({ children }: AppShellProps) {
               🎓 Students
             </Link>
           </li>
+          <li>
+            <Link to="/materials" className={isActive('/materials') ? 'active' : ''} onClick={() => setIsMobileNavOpen(false)}>
+              📄 Materials
+            </Link>
+          </li>
         </ul>
         <div className="sidebar-footer">
           <div className="user-info">

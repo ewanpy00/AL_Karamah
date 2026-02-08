@@ -51,4 +51,10 @@ public class SessionController {
             @RequestParam(defaultValue = "10") int maxResults) {
         return ResponseEntity.ok(sessionService.suggestResourcesForSession(sessionId, maxResults));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSession(@PathVariable UUID id) {
+        sessionService.deleteSession(id);
+        return ResponseEntity.ok().build();
+    }
 }

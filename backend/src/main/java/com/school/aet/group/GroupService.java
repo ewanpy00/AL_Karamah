@@ -85,7 +85,7 @@ public class GroupService {
     }
 
     @Transactional
-    public Group updateGroup(UUID groupId, UpdateGroupRequest request) {
+    public void updateGroup(UUID groupId, UpdateGroupRequest request) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
@@ -109,11 +109,9 @@ public class GroupService {
             AetDomain domain = aetDomainRepository.findById(request.getFocusDomainId())
                     .orElseThrow(() -> new RuntimeException("Focus domain not found"));
             group.setFocusDomain(domain);
-        } else {
-            group.setFocusDomain(null);
         }
 
-        return groupRepository.save(group);
+        groupRepository.save(group);
     }
 
     @Transactional

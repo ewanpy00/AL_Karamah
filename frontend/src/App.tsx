@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import GroupsPage from './pages/GroupsPage'
 import StudentsPage from './pages/StudentsPage'
 import StudentDetailPage from './pages/StudentDetailPage'
+import MaterialsPage from './pages/MaterialsPage'
 import AppShell from './components/layout/AppShell'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
         <Route path="/" element={isAuthenticated ? <AppShell><DashboardPage /></AppShell> : <Navigate to="/login" />} />
         <Route path="/calendar" element={isAuthenticated ? <AppShell><CalendarPage /></AppShell> : <Navigate to="/login" />} />
+        <Route path="/materials" element={isAuthenticated ? <AppShell><MaterialsPage /></AppShell> : <Navigate to="/login" />} />
         <Route path="/groups" element={isAuthenticated ? <AppShell><GroupsPage /></AppShell> : <Navigate to="/login" />} />
         <Route path="/students" element={isAuthenticated ? <AppShell><StudentsPage /></AppShell> : <Navigate to="/login" />} />
         <Route path="/students/:id" element={isAuthenticated ? <AppShell><StudentDetailPage /></AppShell> : <Navigate to="/login" />} />

@@ -161,6 +161,13 @@ public class SessionService {
     }
 
     @Transactional
+    public void deleteSession(UUID sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+        sessionRepository.delete(session);
+    }
+
+    @Transactional
     public ResourceSuggestionResponse suggestResourcesForSession(UUID sessionId, int maxResults) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));

@@ -6,9 +6,10 @@ import './SessionDetailsDrawer.css'
 interface SessionDetailsDrawerProps {
   sessionId: string
   onClose: () => void
+  onDeleted?: () => void
 }
 
-export default function SessionDetailsDrawer({ sessionId, onClose }: SessionDetailsDrawerProps) {
+export default function SessionDetailsDrawer({ sessionId, onClose, onDeleted }: SessionDetailsDrawerProps) {
   const [session, setSession] = useState<SessionDetail | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -41,12 +42,23 @@ export default function SessionDetailsDrawer({ sessionId, onClose }: SessionDeta
     return null
   }
 
+  const handleDelete = async () => {
+    const ok = window.confirm('Delete this event?')
+    if (!ok) return
+    await sessionsApi.deleteSession(sessionId)
+    onDeleted?.()
+    onClose()
+  }
+
   return (
     <div className="drawer-overlay" onClick={onClose}>
       <div className="drawer" onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
           <h3>{session.title}</h3>
-          <button onClick={onClose} className="close-btn">×</button>
+          <div className="drawer-actions">
+            <button onClick={handleDelete} className="delete-btn" title="Delete event">Delete</button>
+            <button onClick={onClose} className="close-btn">×</button>
+          </div>
         </div>
         <div className="drawer-content">
           <div className="session-info">
@@ -104,4 +116,3 @@ export default function SessionDetailsDrawer({ sessionId, onClose }: SessionDeta
     </div>
   )
 }
-
